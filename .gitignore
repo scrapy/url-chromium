@@ -4,8 +4,6 @@
 
 *_android.cc
 
-/url_canon_icu.cc
-
 /ipc
 /mojom
 gurl_fuzzer.cc
