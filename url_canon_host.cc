@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
+// #include "base/logging.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 
@@ -336,7 +336,7 @@ bool DoHostSubstring(const CHAR* spec,
 
   const bool success =
       DoSimpleHost(&spec[host.begin], host.len, output, &has_non_ascii);
-  DCHECK(!has_non_ascii);
+  // DCHECK(!has_non_ascii);
   return success;
 }
 

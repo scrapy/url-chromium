@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+// #include "base/logging.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_constants.h"
@@ -371,7 +371,7 @@ bool DoResolveRelativePath(const char* base_url,
 
   // We should always have something to do in this function, the caller checks
   // that some component is being replaced.
-  DCHECK(false) << "Not reached";
+  // DCHECK(false) << "Not reached";
   return success;
 }
 

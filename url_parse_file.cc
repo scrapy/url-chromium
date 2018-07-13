@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
+// #include "base/logging.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_file.h"
 #include "url/url_parse_internal.h"
@@ -115,7 +115,7 @@ void DoParseLocalFile(const CHAR* spec,
 // this is usually a slash, but needn't be; we allow paths like "file:c:\foo".
 template<typename CHAR>
 void DoParseFileURL(const CHAR* spec, int spec_len, Parsed* parsed) {
-  DCHECK(spec_len >= 0);
+  // DCHECK(spec_len >= 0);
 
   // Get the parts we never use for file URLs out of the way.
   parsed->username.reset();
