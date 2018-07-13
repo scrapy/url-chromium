@@ -13,7 +13,7 @@
 // #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/trace_event/memory_usage_estimator.h"
+// #include "base/trace_event/memory_usage_estimator.h"
 #include "url/url_canon_stdstring.h"
 #include "url/url_util.h"
 
@@ -464,11 +464,11 @@ void GURL::Swap(GURL* other) {
   inner_url_.swap(other->inner_url_);
 }
 
-size_t GURL::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(spec_) +
-         base::trace_event::EstimateMemoryUsage(inner_url_) +
-         (parsed_.inner_parsed() ? sizeof(url::Parsed) : 0);
-}
+// size_t GURL::EstimateMemoryUsage() const {
+//   return base::trace_event::EstimateMemoryUsage(spec_) +
+//          base::trace_event::EstimateMemoryUsage(inner_url_) +
+//          (parsed_.inner_parsed() ? sizeof(url::Parsed) : 0);
+// }
 
 std::ostream& operator<<(std::ostream& out, const GURL& url) {
   return out << url.possibly_invalid_spec();

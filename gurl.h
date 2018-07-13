@@ -423,7 +423,7 @@ class URL_EXPORT GURL {
 
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
-  size_t EstimateMemoryUsage() const;
+  // size_t EstimateMemoryUsage() const;
 
  private:
   // Variant of the string parsing constructor that allows the caller to elect
