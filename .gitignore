@@ -5,3 +5,21 @@
 *_android.cc
 
 /url_canon_icu.cc
+
+/ipc
+/mojom
+gurl_fuzzer.cc
+BUILD.gn
+gurl_fuzzer.dict
+origin.cc
+origin.h
+DEPS
+features.gni
+run_all_unittests.cc
+scheme_host_port.cc
+scheme_host_port.h
+url_canon_icu_alternatives_ios.mm
+url_canon_icu.h
+url_canon_internal_file.h
+url_canon.cc
+url_test_utils.h
