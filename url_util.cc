@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <string.h>
 
-// #include "base/debug/leak_annotations.h"
+#include "base/debug/leak_annotations.h"
 // #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "url/url_canon_internal.h"
@@ -497,7 +497,7 @@ void DoAddSchemeWithType(const char* new_scheme,
   // Duplicate the scheme into a new buffer and add it to the list of standard
   // schemes. This pointer will be leaked on shutdown.
   char* dup_scheme = new char[scheme_len + 1];
-  // ANNOTATE_LEAKING_OBJECT_PTR(dup_scheme);
+  ANNOTATE_LEAKING_OBJECT_PTR(dup_scheme);
   memcpy(dup_scheme, new_scheme, scheme_len + 1);
 
   SchemeWithType scheme_with_type;
