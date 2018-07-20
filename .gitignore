@@ -18,5 +18,4 @@ scheme_host_port.cc
 scheme_host_port.h
 url_canon_icu_alternatives_ios.mm
 url_canon_internal_file.h
-url_canon.cc
 url_test_utils.h
