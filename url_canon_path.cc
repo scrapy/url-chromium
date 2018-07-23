@@ -4,7 +4,7 @@
 
 #include <limits.h>
 
-#include "base/logging.h"
+// #include "base/logging.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_parse_internal.h"
@@ -148,10 +148,10 @@ DotDisposition ClassifyAfterDot(const CHAR* spec, int after_dot,
 // The output is guaranteed to end in a slash when this function completes.
 void BackUpToPreviousSlash(int path_begin_in_output,
                            CanonOutput* output) {
-  DCHECK(output->length() > 0);
+  // DCHECK(output->length() > 0);
 
   int i = output->length() - 1;
-  DCHECK(output->at(i) == '/');
+  // DCHECK(output->at(i) == '/');
   if (i == path_begin_in_output)
     return;  // We're at the first slash, nothing to do.
 
@@ -286,7 +286,7 @@ bool DoPartialPath(const CHAR* spec,
           // special case slashes. Since slashes are much more common than
           // dots, this actually increases performance measurably (though
           // slightly).
-          DCHECK(output->length() > path_begin_in_output);
+          // DCHECK(output->length() > path_begin_in_output);
           if (output->length() > path_begin_in_output &&
               output->at(output->length() - 1) == '/') {
             // Slash followed by a dot, check to see if this is means relative

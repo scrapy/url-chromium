@@ -13,7 +13,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "base/logging.h"
+// #include "base/logging.h"
 #include "url/url_canon.h"
 
 namespace url {
@@ -188,7 +188,7 @@ inline void DoAppendUTF8(unsigned char_value, Output* output) {
              output);
   } else {
     // Invalid UTF-8 character (>20 bits).
-    NOTREACHED();
+    // NOTREACHED();
   }
 }
 

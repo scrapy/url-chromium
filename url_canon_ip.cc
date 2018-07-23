@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <limits>
 
-#include "base/logging.h"
+// #include "base/logging.h"
 #include "url/url_canon_internal.h"
 
 namespace url {
@@ -447,7 +447,7 @@ bool CheckIPv6ComponentsSize(const IPv6Parsed& parsed,
 template <typename CHAR>
 uint16_t IPv6HexComponentToNumber(const CHAR* spec,
                                   const Component& component) {
-  DCHECK(component.len <= 4);
+  // DCHECK(component.len <= 4);
 
   // Copy the hex string into a C-string.
   char buf[5];
@@ -618,7 +618,7 @@ void AppendIPv6Address(const unsigned char address[16], CanonOutput* output) {
 
   for (int i = 0; i <= 14;) {
     // We check 2 bytes at a time, from bytes (0, 1) to (14, 15), inclusive.
-    DCHECK(i % 2 == 0);
+    // DCHECK(i % 2 == 0);
     if (i == contraction_range.begin && contraction_range.len > 0) {
       // Jump over the contraction.
       if (i == 0)
