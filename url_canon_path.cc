@@ -251,7 +251,8 @@ template<typename CHAR, typename UCHAR>
 bool DoPartialPath(const CHAR* spec,
                    const Component& path,
                    int path_begin_in_output,
-                   CanonOutput* output) {
+                   CanonOutput* output,
+                   bool escape_char) {
   int end = path.end();
 
   // We use this variable to minimize the amount of work done when unescaping --
@@ -366,7 +367,11 @@ bool DoPartialPath(const CHAR* spec,
 
         } else if (flags & ESCAPE_BIT) {
           // This character should be escaped.
-          AppendEscapedChar(out_ch, output);
+          if (escape_char) {
+            AppendEscapedChar(out_ch, output);
+          } else {
+            output->push_back(out_ch);
+          }
         }
       } else {
         // Nothing special about this character, just append it.
@@ -392,7 +397,7 @@ bool DoPath(const CHAR* spec,
     if (!IsURLSlash(spec[path.begin]))
       output->push_back('/');
 
-    success = DoPartialPath<CHAR, UCHAR>(spec, path, out_path->begin, output);
+    success = DoPartialPath<CHAR, UCHAR>(spec, path, out_path->begin, output, true);
   } else {
     // No input, canonical path is a slash.
     output->push_back('/');
@@ -420,18 +425,20 @@ bool CanonicalizePath(const base::char16* spec,
 bool CanonicalizePartialPath(const char* spec,
                              const Component& path,
                              int path_begin_in_output,
-                             CanonOutput* output) {
+                             CanonOutput* output,
+                             bool escape_char) {
   return DoPartialPath<char, unsigned char>(spec, path, path_begin_in_output,
-                                            output);
+                                            output, escape_char);
 }
 
 bool CanonicalizePartialPath(const base::char16* spec,
                              const Component& path,
                              int path_begin_in_output,
-                             CanonOutput* output) {
+                             CanonOutput* output,
+                             bool escape_char) {
   return DoPartialPath<base::char16, base::char16>(spec, path,
                                                    path_begin_in_output,
-                                                   output);
+                                                   output, escape_char);
 }
 
 }  // namespace url
