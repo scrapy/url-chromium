@@ -318,8 +318,16 @@ bool DoResolveRelativePath(const char* base_url,
       // just replace everything from the path on with the new versions.
       // Since the input should be canonical hierarchical URL, we should
       // always have a path.
-      success &= CanonicalizePath(relative_url, path,
-                                  output, &out_parsed->path);
+      // success &= CanonicalizePath(relative_url, path,
+      //                             output, &out_parsed->path);
+      // NOTE: this part of the code has been modified
+      // The paths of the urls need not to be canonicalized
+      // as can be seen in https://github.com/python/cpython/blob/caba55b3b735405b280273f7d99866a046c18281/Lib/urllib/parse.py#L484
+      int path_begin = output->length();
+      out_parsed->path.begin = output->length();
+      success &= CanonicalizePartialPath(relative_url, path, path_begin,
+                                         output, false);
+      out_parsed->path.len = output->length() - out_parsed->path.begin;
     } else {
       // Relative path, replace the query, and reference. We take the
       // original path with the file part stripped, and append the new path.
@@ -328,7 +336,7 @@ bool DoResolveRelativePath(const char* base_url,
       CopyToLastSlash(base_url, base_path_begin, base_parsed.path.end(),
                       output);
       success &= CanonicalizePartialPath(relative_url, path, path_begin,
-                                         output);
+                                         output, false);
       out_parsed->path = MakeRange(path_begin, output->length());
 
       // Copy the rest of the stuff after the path from the relative path.
