@@ -10,10 +10,12 @@
 #include "base/debug/leak_annotations.h"
 // #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_constants.h"
 #include "url/url_file.h"
 #include "url/url_util_internal.h"
+#include "url/url_canon_stdstring.h"
 
 namespace url {
 
@@ -280,6 +282,32 @@ bool DoCanonicalize(const CHAR* spec,
 }
 
 template <typename CHAR>
+void ParseInputURL(const CHAR* spec, int spec_len,
+                   bool trim_path_end, Component scheme,
+                   Parsed* output_parsed) {
+  // This is the parsed version of the input URL, we have to canonicalize it
+  // before storing it in our object.
+  SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
+  if (DoCompareSchemeComponent(spec, scheme, url::kFileScheme)) {
+    // File URLs are special.
+    ParseFileURL(spec, spec_len, output_parsed);
+  } else if (DoCompareSchemeComponent(spec, scheme, url::kFileSystemScheme)) {
+    // Filesystem URLs are special.
+    ParseFileSystemURL(spec, spec_len, output_parsed);
+  } else if (DoIsStandard(spec, scheme, &scheme_type)) {
+    // All "normal" URLs.
+    ParseStandardURL(spec, spec_len, output_parsed);
+  } else if (DoCompareSchemeComponent(spec, scheme, url::kMailToScheme)) {
+    // Mailto URLs are treated like standard URLs, with only a scheme, path,
+    // and query.
+    ParseMailtoURL(spec, spec_len, output_parsed);
+  } else {
+    // "Weird" URLs like data: and javascript:.
+    ParsePathURL(spec, spec_len, trim_path_end, output_parsed);
+  }
+}
+
+template <typename CHAR>
 bool DoCanonicalizeResolveRelative(const CHAR* spec,
                                    int spec_len,
                                    bool trim_path_end,
@@ -323,26 +351,7 @@ bool DoCanonicalizeResolveRelative(const CHAR* spec,
   if (!ExtractScheme(spec, spec_len, &scheme))
     return false;
 
-  // This is the parsed version of the input URL, we have to canonicalize it
-  // before storing it in our object.
-  SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
-  if (DoCompareSchemeComponent(spec, scheme, url::kFileScheme)) {
-    // File URLs are special.
-    ParseFileURL(spec, spec_len, output_parsed);
-  } else if (DoCompareSchemeComponent(spec, scheme, url::kFileSystemScheme)) {
-    // Filesystem URLs are special.
-    ParseFileSystemURL(spec, spec_len, output_parsed);
-  } else if (DoIsStandard(spec, scheme, &scheme_type)) {
-    // All "normal" URLs.
-    ParseStandardURL(spec, spec_len, output_parsed);
-  } else if (DoCompareSchemeComponent(spec, scheme, url::kMailToScheme)) {
-    // Mailto URLs are treated like standard URLs, with only a scheme, path,
-    // and query.
-    ParseMailtoURL(spec, spec_len, output_parsed);
-  } else {
-    // "Weird" URLs like data: and javascript:.
-    ParsePathURL(spec, spec_len, trim_path_end, output_parsed);
-  }
+  ParseInputURL(spec, spec_len, trim_path_end, scheme, output_parsed);
 
   for (int i = 0; i < spec_len; i++) {
     output->push_back(spec[i]);
@@ -437,7 +446,17 @@ bool DoResolveRelative(const char* base_spec,
   for (int i = 0; i < relative_length; i++) {
     output->push_back(relative[i]);
   }
-  return true;
+
+  Parsed relative_parsed;
+  Component scheme;
+  if (!ExtractScheme(relative, relative_length, &scheme))
+    return false;
+
+  ParseInputURL(relative, relative_length, true, scheme, &relative_parsed);
+
+  std::string spec_;
+  url::StdStringCanonOutput output_host(&spec_);
+  return CanonicalizeHost(relative, relative_parsed.host, &output_host, &relative_parsed.host);
 }
 
 template<typename CHAR>
