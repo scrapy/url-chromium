@@ -279,6 +279,77 @@ bool DoCanonicalize(const CHAR* spec,
   return success;
 }
 
+template <typename CHAR>
+bool DoCanonicalizeResolveRelative(const CHAR* spec,
+                                   int spec_len,
+                                   bool trim_path_end,
+                                   WhitespaceRemovalPolicy whitespace_policy,
+                                   CharsetConverter* charset_converter,
+                                   CanonOutput* output,
+                                   Parsed* output_parsed) {
+  output->ReserveSizeIfNeeded(spec_len);
+
+  // Remove any whitespace from the middle of the relative URL if necessary.
+  // Possibly this will result in copying to the new buffer.
+  RawCanonOutputT<CHAR> whitespace_buffer;
+  if (whitespace_policy == REMOVE_WHITESPACE) {
+    spec = RemoveURLWhitespace(spec, spec_len, &whitespace_buffer, &spec_len,
+                               &output_parsed->potentially_dangling_markup);
+  }
+
+  Parsed parsed_input;
+#ifdef WIN32
+  // For Windows, we allow things that look like absolute Windows paths to be
+  // fixed up magically to file URLs. This is done for IE compatibility. For
+  // example, this will change "c:/foo" into a file URL rather than treating
+  // it as a URL with the protocol "c". It also works for UNC ("\\foo\bar.txt").
+  // There is similar logic in url_canon_relative.cc for
+  //
+  // For Max & Unix, we don't do this (the equivalent would be "/foo/bar" which
+  // has no meaning as an absolute path name. This is because browsers on Mac
+  // & Unix don't generally do this, so there is no compatibility reason for
+  // doing so.
+  if (DoesBeginUNCPath(spec, 0, spec_len, false) ||
+      DoesBeginWindowsDriveSpec(spec, 0, spec_len)) {
+    ParseFileURL(spec, spec_len, &parsed_input);
+    for (int i = 0; i < spec_len; i++) {
+      output->push_back(spec[i]);
+    }
+    return true;
+  }
+#endif
+
+  Component scheme;
+  if (!ExtractScheme(spec, spec_len, &scheme))
+    return false;
+
+  // This is the parsed version of the input URL, we have to canonicalize it
+  // before storing it in our object.
+  SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
+  if (DoCompareSchemeComponent(spec, scheme, url::kFileScheme)) {
+    // File URLs are special.
+    ParseFileURL(spec, spec_len, output_parsed);
+  } else if (DoCompareSchemeComponent(spec, scheme, url::kFileSystemScheme)) {
+    // Filesystem URLs are special.
+    ParseFileSystemURL(spec, spec_len, output_parsed);
+  } else if (DoIsStandard(spec, scheme, &scheme_type)) {
+    // All "normal" URLs.
+    ParseStandardURL(spec, spec_len, output_parsed);
+  } else if (DoCompareSchemeComponent(spec, scheme, url::kMailToScheme)) {
+    // Mailto URLs are treated like standard URLs, with only a scheme, path,
+    // and query.
+    ParseMailtoURL(spec, spec_len, output_parsed);
+  } else {
+    // "Weird" URLs like data: and javascript:.
+    ParsePathURL(spec, spec_len, trim_path_end, output_parsed);
+  }
+
+  for (int i = 0; i < spec_len; i++) {
+    output->push_back(spec[i]);
+  }
+  return true;
+}
+
 template<typename CHAR>
 bool DoResolveRelative(const char* base_spec,
                        int base_spec_len,
@@ -327,6 +398,12 @@ bool DoResolveRelative(const char* base_spec,
   // Pretend for a moment that |base_spec| is a standard URL. Normally
   // non-standard URLs are treated as PathURLs, but if the base has an
   // authority we would like to preserve it.
+  // NOTE: this part of the function (from here -> end) has been modified
+  // urllib.parse urljoin keeps all the parts the same when joined
+  // see https://github.com/python/cpython/blob/caba55b3b735405b280273f7d99866a046c18281/Lib/urllib/parse.py#L454
+  // for how the urlunparse func works, and here
+  // https://github.com/python/cpython/blob/caba55b3b735405b280273f7d99866a046c18281/Lib/urllib/parse.py#L484
+  // to see how urljoin uses urlunparse to keep base/url component the same
   if (is_relative && base_is_authority_based && !standard_base_scheme) {
     Parsed base_parsed_authority;
     ParseStandardURL(base_spec, base_spec_len, &base_parsed_authority);
@@ -339,9 +416,9 @@ bool DoResolveRelative(const char* base_spec,
       // The output_parsed is incorrect at this point (because it was built
       // based on base_parsed_authority instead of base_parsed) and needs to be
       // re-created.
-      DoCanonicalize(temporary_output.data(), temporary_output.length(), true,
-                     REMOVE_WHITESPACE, charset_converter, output,
-                     output_parsed);
+      DoCanonicalizeResolveRelative(temporary_output.data(), temporary_output.length(), true,
+                                    REMOVE_WHITESPACE, charset_converter, output,
+                                    output_parsed);
       return did_resolve_succeed;
     }
   } else if (is_relative) {
@@ -354,7 +431,6 @@ bool DoResolveRelative(const char* base_spec,
   }
 
   // Not relative, canonicalize the input.
-  // NOTE: This part of the code is modified.
   // urljoin function in urllib keeps the relative part not canonicalized
   // as can be seen in https://github.com/python/cpython/blob/caba55b3b735405b280273f7d99866a046c18281/Lib/urllib/parse.py#L487
   // code based on url_canon_relative.cc#464
