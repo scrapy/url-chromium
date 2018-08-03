@@ -328,7 +328,7 @@ bool DoResolveRelativePath(const char* base_url,
       CopyToLastSlash(base_url, base_path_begin, base_parsed.path.end(),
                       output);
       success &= CanonicalizePartialPath(relative_url, path, path_begin,
-                                         output, false);
+                                         output);
       out_parsed->path = MakeRange(path_begin, output->length());
 
       // Copy the rest of the stuff after the path from the relative path.

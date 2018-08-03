@@ -396,13 +396,11 @@ bool SetupUTF16OverrideComponents(const char* base,
 bool CanonicalizePartialPath(const char* spec,
                              const Component& path,
                              int path_begin_in_output,
-                             CanonOutput* output,
-                             bool escape_char);
+                             CanonOutput* output);
 bool CanonicalizePartialPath(const base::char16* spec,
                              const Component& path,
                              int path_begin_in_output,
-                             CanonOutput* output,
-                             bool escape_char);
+                             CanonOutput* output);
 
 #ifndef WIN32
 
