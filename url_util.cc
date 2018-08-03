@@ -354,9 +354,11 @@ bool DoResolveRelative(const char* base_spec,
   }
 
   // Not relative, canonicalize the input.
-  return DoCanonicalize(relative, relative_length, true,
-                        DO_NOT_REMOVE_WHITESPACE, charset_converter, output,
-                        output_parsed);
+  // code based on url_canon_relative.cc#464
+  for (int i = 0; i < relative_length; i++) {
+    output->push_back(relative[i]);
+  }
+  return true;
 }
 
 template<typename CHAR>
