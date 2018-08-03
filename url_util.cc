@@ -354,6 +354,9 @@ bool DoResolveRelative(const char* base_spec,
   }
 
   // Not relative, canonicalize the input.
+  // NOTE: This part of the code is modified.
+  // urljoin function in urllib keeps the relative part not canonicalized
+  // as can be seen in https://github.com/python/cpython/blob/caba55b3b735405b280273f7d99866a046c18281/Lib/urllib/parse.py#L487
   // code based on url_canon_relative.cc#464
   for (int i = 0; i < relative_length; i++) {
     output->push_back(relative[i]);
