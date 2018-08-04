@@ -454,8 +454,8 @@ bool DoResolveRelative(const char* base_spec,
 
   ParseInputURL(relative, relative_length, true, scheme, &relative_parsed);
 
-  std::string spec_;
-  url::StdStringCanonOutput output_host(&spec_);
+  std::string relative_host;
+  url::StdStringCanonOutput output_host(&relative_host);
   return CanonicalizeHost(relative, relative_parsed.host, &output_host, &relative_parsed.host);
 }
 
