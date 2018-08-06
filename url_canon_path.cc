@@ -247,6 +247,7 @@ void CheckForNestedEscapes(const CHAR* spec,
 // We do not collapse multiple slashes in a row to a single slash. It seems
 // no web browsers do this, and we don't want incompatibilities, even though
 // it would be correct for most systems.
+// SCURL NOTE: this function has been modified to support urljoin in Scurl
 template<typename CHAR, typename UCHAR>
 bool DoPartialPath(const CHAR* spec,
                    const Component& path,
@@ -422,6 +423,7 @@ bool CanonicalizePath(const base::char16* spec,
   return DoPath<base::char16, base::char16>(spec, path, output, out_path);
 }
 
+// SCURL NOTE: this function has been modified to support urljoin in Scurl
 bool CanonicalizePartialPath(const char* spec,
                              const Component& path,
                              int path_begin_in_output,

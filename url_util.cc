@@ -281,6 +281,7 @@ bool DoCanonicalize(const CHAR* spec,
   return success;
 }
 
+// SCURL NOTE: this function has been created to support urljoin in Scurl
 template <typename CHAR>
 void ParseInputURL(const CHAR* spec, int spec_len,
                    bool trim_path_end, Component scheme,
@@ -307,6 +308,7 @@ void ParseInputURL(const CHAR* spec, int spec_len,
   }
 }
 
+// SCURL NOTE: this function has been created to support urljoin in Scurl
 template <typename CHAR>
 bool DoCanonicalizeResolveRelative(const CHAR* spec,
                                    int spec_len,
@@ -359,6 +361,7 @@ bool DoCanonicalizeResolveRelative(const CHAR* spec,
   return true;
 }
 
+// SCURL NOTE: this function has been modified to support urljoin in Scurl
 template<typename CHAR>
 bool DoResolveRelative(const char* base_spec,
                        int base_spec_len,
