@@ -248,6 +248,8 @@ void CheckForNestedEscapes(const CHAR* spec,
 // no web browsers do this, and we don't want incompatibilities, even though
 // it would be correct for most systems.
 // SCURL NOTE: this function has been modified to support urljoin in Scurl
+// It is modified to not escape the special char when the escape_char option is
+// set to false. The main reason is to serve the urljoin function in Scurl.
 template<typename CHAR, typename UCHAR>
 bool DoPartialPath(const CHAR* spec,
                    const Component& path,
@@ -433,6 +435,7 @@ bool CanonicalizePartialPath(const char* spec,
                                             output, escape_char);
 }
 
+// SCURL NOTE: this function has been modified to support urljoin in Scurl
 bool CanonicalizePartialPath(const base::char16* spec,
                              const Component& path,
                              int path_begin_in_output,

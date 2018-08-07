@@ -282,6 +282,10 @@ bool DoCanonicalize(const CHAR* spec,
 }
 
 // SCURL NOTE: this function has been created to support urljoin in Scurl
+// This function is based on DoCanonicalize function above to serve
+// the DoResolveRelative function below, which is the urljoin function of Scurl
+// This function does not canonicalize the input URL
+// It is created to avoid making too many changes to the GURL code!
 template <typename CHAR>
 void ParseInputURL(const CHAR* spec, int spec_len,
                    bool trim_path_end, Component scheme,
