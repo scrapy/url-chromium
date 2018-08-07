@@ -269,6 +269,8 @@ int CopyBaseDriveSpecIfNecessary(const char* base_url,
 // A subroutine of DoResolveRelativeURL, this resolves the URL knowning that
 // the input is a relative path or less (query or ref).
 // SCURL NOTE: this function has been modified to support urljoin in Scurl
+// This function is modified to not canonicalize the path of the urljoin,
+// which is what urljoin from urllib.parse does.
 template<typename CHAR>
 bool DoResolveRelativePath(const char* base_url,
                            const Parsed& base_parsed,

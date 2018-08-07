@@ -394,6 +394,8 @@ bool SetupUTF16OverrideComponents(const char* base,
 // Implemented in url_canon_path.cc, these are required by the relative URL
 // resolver as well, so we declare them here.
 // SCURL NOTE: this function has been modified to support urljoin in Scurl
+// This has been added to serve Scurl urljoin, which does not require
+// canonicalizing input!
 bool CanonicalizePartialPath(const char* spec,
                              const Component& path,
                              int path_begin_in_output,
